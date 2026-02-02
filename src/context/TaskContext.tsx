@@ -1,55 +1,47 @@
-import React, {
-  createContext,
-  useState,
-  useContext,
-  useCallback,
-  useMemo,
-} from "react";
-import { Task } from "../types/task";
-import { v4 as uuidv4 } from "uuid";
+import React, { createContext, useState, useContext, useCallback, useMemo } from 'react';
+import { Task } from '../types/task';
+import { v4 as uuidv4 } from 'uuid';
 
 interface TaskContextType {
   tasks: Task[];
-  addTask: (task: Omit<Task, "id" | "createdAt">) => void;
+  addTask: (task: Omit<Task, 'id' | 'createdAt'>) => void;
   updateTask: (id: string, updates: Partial<Task>) => void;
   deleteTask: (id: string) => void;
-  filterTasks: (status?: Task["status"], priority?: Task["priority"]) => Task[];
+  filterTasks: (status?: Task['status'], priority?: Task['priority']) => Task[];
 }
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
 
-export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [tasks, setTasks] = useState<Task[]>([
     {
       id: uuidv4(),
-      title: "Initial Task",
-      status: "todo111",
-      priority: "medium",
+      title: 'Initial Task',
+      status: 'todo',
+      priority: 'medium',
       createdAt: new Date(),
-      description: "This is a sample task to start with",
+      description: 'This is a sample task to start with',
     },
     {
       id: uuidv4(),
-      title: "Second Task",
-      status: "todo",
-      priority: "high",
+      title: 'Second Task',
+      status: 'todo',
+      priority: 'high',
       createdAt: new Date(),
-      description: "This is another task",
+      description: 'This is another task',
     },
   ]);
 
-  const addTask = useCallback((taskData: Omit<Task, "id" | "createdAt">) => {
+  const addTask = useCallback((taskData: Omit<Task, 'id' | 'createdAt'>) => {
     const newTask: Task = {
       ...taskData,
       id: uuidv4(),
       createdAt: new Date(),
-      status: taskData.status || "todo",
+      status: taskData.status || 'todo',
     };
 
     if (newTask.title.length > 100) {
-      alert("Task title too long!");
+      alert('Task title too long!');
       return;
     }
 
@@ -58,11 +50,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const updateTask = useCallback(
     (id: string, updates: Partial<Task>) => {
-      setTasks(
-        tasks.map((task) =>
-          task.id === id ? { ...task, ...updates, updatedAt: new Date() } : task
-        )
-      );
+      setTasks(tasks.map((task) => (task.id === id ? { ...task, ...updates, updatedAt: new Date() } : task)));
     },
     [tasks]
   );
@@ -79,12 +67,8 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 
   const filterTasks = useCallback(
-    (status?: Task["status"], priority?: Task["priority"]) => {
-      return tasks.filter(
-        (task) =>
-          (!status || task.status === status) &&
-          (!priority || task.priority === priority)
-      );
+    (status?: Task['status'], priority?: Task['priority']) => {
+      return tasks.filter((task) => (!status || task.status === status) && (!priority || task.priority === priority));
     },
     [tasks]
   );
@@ -100,15 +84,13 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({
     [tasks, addTask, updateTask, deleteTask, filterTasks]
   );
 
-  return (
-    <TaskContext.Provider value={contextValue}>{children}</TaskContext.Provider>
-  );
+  return <TaskContext.Provider value={contextValue}>{children}</TaskContext.Provider>;
 };
 
 export const useTasks = () => {
   const context = useContext(TaskContext);
   if (!context) {
-    throw new Error("useTasks must be used within a TaskProvider");
+    throw new Error('useTasks must be used within a TaskProvider');
   }
   return context;
 };
