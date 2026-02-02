@@ -28,6 +28,10 @@ export const TaskForm = () => {
       alert('Title is required.');
       return false;
     }
+    if (formData.title.length > 100) {
+      alert('Task title too long!');
+      return false;
+    }
     return true;
   };
 
